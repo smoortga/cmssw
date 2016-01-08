@@ -71,6 +71,7 @@ namespace reco {
       jetNSingleTrackVertices,                  // number of single-track ghost-track vertices
 
       vertexMass,                               // mass of track sum at secondary vertex
+      correctedSVMass,				// corrected mass of track sum at secondary vertex (arXiv [1504.07670])
       vertexNTracks,                            // number of tracks at secondary vertex
       vertexFitProb,                            // vertex fit probability
 
@@ -112,6 +113,10 @@ namespace reco {
 
       massVertexEnergyFraction,                 // vertexmass times fraction of the vertex energy w.r.t. the jet energy
       vertexBoostOverSqrtJetPt,                 // variable related to the boost of the vertex system in flight direction
+	  
+	  jetPtD,									// sqrt(sum(TrackpT^2))/sum(TrackPt) sum over all tracks [CMS PAS JME-13-002]
+	  
+	  relConcentricEnergyAroundJetAxis,		    // (scalar) Sum of momentum (magintude) of the tracks within DeltaR of {0.05,0.1 ,... 0.4} around jet axis divided by the total track momentum
 
       leptonSip2d,                              // 2D signed impact parameter of the soft lepton
       leptonSip3d,                              // 3D signed impact parameter of the soft lepton

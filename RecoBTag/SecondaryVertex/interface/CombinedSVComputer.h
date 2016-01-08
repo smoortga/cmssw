@@ -147,14 +147,51 @@ void CombinedSVComputer::fillCommonVariables(reco::TaggingVariableList & vars, r
 
 	const typename IPTI::input_container &tracks = ipInfo.selectedTracks();
 	std::vector<const Track *> pseudoVertexTracks;
-
-        const Track * trackPairV0Test[2];
-        range = flipIterate(indices.size(), false);
-        range_for(i, range) {
+	
+	double ConcentricEnergyAroundJetAxis_DR005 = 0;
+	double ConcentricEnergyAroundJetAxis_DR01 = 0;
+	double ConcentricEnergyAroundJetAxis_DR015 = 0;
+	double ConcentricEnergyAroundJetAxis_DR02 = 0;
+	double ConcentricEnergyAroundJetAxis_DR025 = 0;
+	double ConcentricEnergyAroundJetAxis_DR03 = 0;
+	double ConcentricEnergyAroundJetAxis_DR035 = 0;
+	double ConcentricEnergyAroundJetAxis_DR04 = 0;
+	double sumJetTracksMomentum = 0;
+	
+	double sumJetTracksPt = 0;
+	double sumJetTracksPt2 = 0;
+	
+    const Track * trackPairV0Test[2];
+    range = flipIterate(indices.size(), false);
+    range_for(i, range) {
                 std::size_t idx = indices[i];
                 const reco::btag::TrackIPData &data = ipData[idx];
                 const Track * trackPtr = reco::btag::toTrack(tracks[idx]);
                 const Track &track = *trackPtr;
+
+
+
+				math::XYZVector trackMom = track.momentum();
+                double trackMag = std::sqrt(trackMom.Mag2());
+				
+				////////////// needed for relConcentricEnergyAroundJetAxis /////////
+				float DeltaR_trk_jet = VectorUtil::DeltaR(trackMom, jetDir);
+				if (DeltaR_trk_jet < 0.05){ConcentricEnergyAroundJetAxis_DR005 += trackMag;}
+				else if (DeltaR_trk_jet < 0.1){ConcentricEnergyAroundJetAxis_DR01 += trackMag;}
+				else if (DeltaR_trk_jet < 0.15){ConcentricEnergyAroundJetAxis_DR015 += trackMag;}
+				else if (DeltaR_trk_jet < 0.2){ConcentricEnergyAroundJetAxis_DR02 += trackMag;}
+				else if (DeltaR_trk_jet < 0.25){ConcentricEnergyAroundJetAxis_DR025 += trackMag;}
+				else if (DeltaR_trk_jet < 0.3){ConcentricEnergyAroundJetAxis_DR03 += trackMag;}
+				else if (DeltaR_trk_jet < 0.35){ConcentricEnergyAroundJetAxis_DR035 += trackMag;}
+				else if (DeltaR_trk_jet < 0.4){ConcentricEnergyAroundJetAxis_DR04 += trackMag;}
+				sumJetTracksMomentum += trackMag;
+				////////////////////////////////////////////////////////////////////
+
+				////////////// needed for jetPtD ////////////////////////////////////
+				sumJetTracksPt += track.pt();
+				sumJetTracksPt2 += track.pt()*track.pt();
+				std::cout << "sumJetTracksPt = " << sumJetTracksPt << "  ||  sumJetTracksPt2 = " << sumJetTracksPt2 << std::endl;
+				////////////////////////////////////////////////////////////////////
 
                 jet_track_ESum += std::sqrt(track.momentum().Mag2() + ROOT::Math::Square(ParticleMasses::piPlus));
 
@@ -201,8 +238,7 @@ void CombinedSVComputer::fillCommonVariables(reco::TaggingVariableList & vars, r
                 trackJetKinematics.add(track);
 
                 // add track variables
-                math::XYZVector trackMom = track.momentum();
-                double trackMag = std::sqrt(trackMom.Mag2());
+				
 
                 vars.insert(btau::trackSip3dVal, flipValue(data.ip3d.value(), false), true);
                 vars.insert(btau::trackSip3dSig, flipValue(data.ip3d.significance(), false), true);
@@ -224,7 +260,26 @@ void CombinedSVComputer::fillCommonVariables(reco::TaggingVariableList & vars, r
                 vars.insert(btau::trackPtRatio, VectorUtil::Perp(trackMom, jetDir) / trackMag, true);
                 vars.insert(btau::trackPParRatio, jetDir.Dot(trackMom) / trackMag, true);
         }
-
+		
+		///////////// Calculate momentum in concentric cones around the jet-axis divided by the total momentum of the tracks ///////////////////////////
+		///////////// begin ////////////////////////
+		vars.insert(btau::relConcentricEnergyAroundJetAxis, ConcentricEnergyAroundJetAxis_DR005 / sumJetTracksMomentum, true);
+		vars.insert(btau::relConcentricEnergyAroundJetAxis, ConcentricEnergyAroundJetAxis_DR01 / sumJetTracksMomentum, true);
+		vars.insert(btau::relConcentricEnergyAroundJetAxis, ConcentricEnergyAroundJetAxis_DR015 / sumJetTracksMomentum, true);
+		vars.insert(btau::relConcentricEnergyAroundJetAxis, ConcentricEnergyAroundJetAxis_DR02 / sumJetTracksMomentum, true);
+		vars.insert(btau::relConcentricEnergyAroundJetAxis, ConcentricEnergyAroundJetAxis_DR025 / sumJetTracksMomentum, true);
+		vars.insert(btau::relConcentricEnergyAroundJetAxis, ConcentricEnergyAroundJetAxis_DR03 / sumJetTracksMomentum, true);
+		vars.insert(btau::relConcentricEnergyAroundJetAxis, ConcentricEnergyAroundJetAxis_DR035 / sumJetTracksMomentum, true);
+		vars.insert(btau::relConcentricEnergyAroundJetAxis, ConcentricEnergyAroundJetAxis_DR04 / sumJetTracksMomentum, true);
+		///////////// end //////////////////////////
+		
+		///////////// Calculate  jet pt D [CMS PAS JME-13-002] ///////////////////////////
+		///////////// begin ////////////////////////
+		std::cout << "Jet is done: jetPtD = " << std::sqrt(sumJetTracksPt2)/sumJetTracksPt << std::endl;
+		if (std::sqrt(sumJetTracksPt2)/sumJetTracksPt > 0.7 && std::sqrt(sumJetTracksPt2)/sumJetTracksPt < 0.73){std::cout << "*** jetPtD is close to 0.7!! ***" << std::endl;}
+		vars.insert(btau::jetPtD, std::sqrt(sumJetTracksPt2)/sumJetTracksPt, true);
+		///////////// end //////////////////////////
+		
         if (vtxType == btag::Vertices::NoVertex && vertexKinematics.numberOfTracks() >= pseudoMultiplicityMin && pseudoVertexV0Filter(pseudoVertexTracks))
         {
                 vtxType = btag::Vertices::PseudoVertex;
@@ -260,14 +315,17 @@ void CombinedSVComputer::fillCommonVariables(reco::TaggingVariableList & vars, r
                         vars.insert(btau::vertexJetDeltaR,VectorUtil::DeltaR(vertexSum, jetDir), true);
                 }
 
-                double vertexMass = vertexSum.M();
+		double vertexMass = vertexSum.M();
+		vars.insert(btau::vertexMass, vertexMass, true);
+		
                 if (vtxType == btag::Vertices::RecoVertex &&
                     vertexMassCorrection) {
                         GlobalVector dir = svInfo.flightDirection(vtx);
                         double vertexPt2 = math::XYZVector(dir.x(), dir.y(), dir.z()).Cross(vertexSum).Mag2() / dir.mag2();
-                        vertexMass = std::sqrt(vertexMass * vertexMass + vertexPt2) + std::sqrt(vertexPt2);
+                        double correctedSVMass = std::sqrt(vertexMass * vertexMass + vertexPt2) + std::sqrt(vertexPt2);
+			vars.insert(btau::correctedSVMass, correctedSVMass, true);
                 }
-                vars.insert(btau::vertexMass, vertexMass, true);
+      
 
                 double varPi = (vertexMass/5.2794) * (vtx_track_ESum /jet_track_ESum); // 5.2794 should be the average B meson mass of PDG! CHECK!!!
                 vars.insert(btau::massVertexEnergyFraction, varPi / (varPi + 0.04), true);
