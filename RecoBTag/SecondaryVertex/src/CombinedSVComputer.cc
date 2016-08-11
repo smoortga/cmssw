@@ -34,7 +34,6 @@ inline double CombinedSVComputer::flipValue(double value, bool vertex) const
 	return (vertex ? vertexFlip : trackFlip) ? -value : value;
 }
 
-
 inline CombinedSVComputer::IterationRange CombinedSVComputer::flipIterate(
 						int size, bool vertex) const
 {

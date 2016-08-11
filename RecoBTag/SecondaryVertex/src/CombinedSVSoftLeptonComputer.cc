@@ -9,8 +9,3 @@ CombinedSVSoftLeptonComputer::CombinedSVSoftLeptonComputer(const edm::ParameterS
 	SoftLeptonFlip(params.getParameter<bool>("SoftLeptonFlip"))
 {
 }
-
-/*inline double CombinedSVSoftLeptonComputer::flipSoftLeptonValue(double value) const
-{
-	return SoftLeptonFlip ? -value : value;
-}*/
