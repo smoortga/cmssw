@@ -15,12 +15,24 @@ class CombinedSVSoftLeptonComputer : public CombinedSVComputer {
     public:
 	explicit CombinedSVSoftLeptonComputer(const edm::ParameterSet &params);
 	
+	
+	double flipSoftLeptonValue(double value) const;
+	
 	template <class IPTI,class SVTI>
 	reco::TaggingVariableList
 	operator () (const IPTI &ipInfo, const SVTI &svInfo,
 		     const reco::CandSoftLeptonTagInfo &muonInfo,
 		     const reco::CandSoftLeptonTagInfo &elecInfo ) const;
+	
+	private:
+	bool					SoftLeptonFlip;
 };
+
+
+double CombinedSVSoftLeptonComputer::flipSoftLeptonValue(double value) const
+{
+	return SoftLeptonFlip ? -value : value;
+}
 
 template <class IPTI,class SVTI>
 reco::TaggingVariableList CombinedSVSoftLeptonComputer::operator () (const IPTI &ipInfo, const SVTI &svInfo,
@@ -46,7 +58,7 @@ reco::TaggingVariableList CombinedSVSoftLeptonComputer::operator () (const IPTI 
 		leptonCategory = 1; // muon category
 		const SoftLeptonProperties & propertiesMuon = muonInfo.properties(i);
 		vars.insert(btau::leptonPtRel,propertiesMuon.ptRel , true);
-		vars.insert(btau::leptonSip3d,propertiesMuon.sip3d , true);
+		vars.insert(btau::leptonSip3d,flipSoftLeptonValue(propertiesMuon.sip3d) , true);
 		vars.insert(btau::leptonDeltaR,propertiesMuon.deltaR , true);
 		vars.insert(btau::leptonRatioRel,propertiesMuon.ratioRel , true);
 		vars.insert(btau::leptonEtaRel,propertiesMuon.etaRel , true);
