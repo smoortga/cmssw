@@ -72,7 +72,7 @@ reco::TaggingVariableList CombinedSVSoftLeptonComputer::operator () (const IPTI 
 			leptonCategory = 2; // electron category
 			const SoftLeptonProperties & propertiesElec = elecInfo.properties(i);
 			vars.insert(btau::leptonPtRel,propertiesElec.ptRel , true);
-			vars.insert(btau::leptonSip3d,propertiesElec.sip3d , true);
+			vars.insert(btau::leptonSip3d,flipSoftLeptonValue(propertiesElec.sip3d) , true);
 			vars.insert(btau::leptonDeltaR,propertiesElec.deltaR , true);
 			vars.insert(btau::leptonRatioRel,propertiesElec.ratioRel , true);
 			vars.insert(btau::leptonEtaRel,propertiesElec.etaRel , true);
