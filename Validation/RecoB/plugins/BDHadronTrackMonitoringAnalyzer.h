@@ -16,7 +16,6 @@
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 //#include "SimDataFormats/JetMatching/interface/JetFlavourInfoMatching.h"
 
-//typedef edm::View<reco::Jet> JetCollection;
 
 /** \class BDHadronTrackMonitoringAnalyzer
  *
@@ -35,29 +34,15 @@ class BDHadronTrackMonitoringAnalyzer : public DQMEDAnalyzer {
 
 
    private:
-
-
-  // Get histogram plotting options from configuration.
-  //virtual void bookHistograms(DQMStore::IBooker &, edm::Run const &, edm::EventSetup const &) override;     
-
-
+	// InputTags
   	edm::InputTag JetSrc_;
-  //edm::InputTag PatJetSrc_;
-  //edm::InputTag TrackSrc;
-  //edm::InputTag TrackingParticleSrc;
-  
-  
-
-  
-    //add consumes 
-    //edm::EDGetTokenT<PatJetCollection> JetCollectionTag_;
+	
+	// Tokens
     edm::EDGetTokenT<reco::PFJetCollection> JetCollectionTag_;
   
-  
-  
-    // The Histograms
+    // Histograms
     MonitorElement *nJets;
-    //MonitorElement *Track_pt_b_BWeak
+
 
 };
 
