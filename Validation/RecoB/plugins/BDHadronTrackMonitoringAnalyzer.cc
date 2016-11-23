@@ -7,12 +7,10 @@
 using namespace reco;
 using namespace edm;
 using namespace std;
-//using namespace RecoBTag;
-//typedef edm::View<reco::Jet> JetCollection;
+
 
 BDHadronTrackMonitoringAnalyzer::BDHadronTrackMonitoringAnalyzer(const edm::ParameterSet& pSet) :
 	JetSrc_ ( pSet.getParameter<InputTag>("JetSource") )
-	//PatJetSrc_ ( pSet.getParameter<InputTag>("PatJetSource") )
 {
 	JetCollectionTag_ = consumes<reco::PFJetCollection>(JetSrc_);
 }
@@ -42,7 +40,6 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
     if ( ( jet->pt() < 20 || std::fabs( jet->eta() ) > 2.4 ) ) continue;
     njets += 1;
   }
-  //std::cout << njets << std::endl;
   nJets->Fill(njets);
   
 }
