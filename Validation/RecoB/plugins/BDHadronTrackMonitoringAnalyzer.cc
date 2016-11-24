@@ -3,46 +3,85 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h" 
 
+#include "DQMOffline/RecoB/interface/Tools.h"
+
+
 
 using namespace reco;
 using namespace edm;
 using namespace std;
 
 
+typedef TrackIPTagInfo::input_container Tracks;
+
+
+// ---------- Constructor -----------
+
 BDHadronTrackMonitoringAnalyzer::BDHadronTrackMonitoringAnalyzer(const edm::ParameterSet& pSet) :
-	JetSrc_ ( pSet.getParameter<InputTag>("JetSource") )
+	ipTagInfos_ ( pSet.getParameter<std::string>("ipTagInfos") ),
+	PatJetSrc_ ( pSet.getParameter<InputTag>("PatJetSource") ),
+	TrackSrc_ ( pSet.getParameter<InputTag>("TrackSource") )
+	
 {
-	JetCollectionTag_ = consumes<reco::PFJetCollection>(JetSrc_);
+	PatJetCollectionTag_ = consumes<pat::JetCollection>(PatJetSrc_);
+	TrackCollectionTag_ = consumes<reco::TrackCollection>(TrackSrc_);
 }
+
+
+
+// ---------- BookHistograms -----------
 
 void BDHadronTrackMonitoringAnalyzer::bookHistograms(DQMStore::IBooker & ibook, edm::Run const & run, edm::EventSetup const & es)
 {
   //
   // Book all histograms.
   //
-  nJets = ibook.book1D("nJets","Number of jets;number of jets;Entries",16,-0.5,15.5);
+  RecoBTag::setTDRStyle();
+  
+  nSelectedTracks_bJet = ibook.book1D("nSelectedTracks_bJet","Number of selected tracks in b jets;number of selected tracks;jets",11,-0.5,10.5);
   
 }
 
+
+// ---------- Destructor -----------
 
 BDHadronTrackMonitoringAnalyzer::~BDHadronTrackMonitoringAnalyzer()
 {  
 }
 
 
+// ---------- Analyze -----------
+
 void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  edm::Handle<reco::PFJetCollection> jetsColl;
-  iEvent.getByToken(JetCollectionTag_, jetsColl);
   
-  int njets = 0;
-  for ( reco::PFJetCollection::const_iterator jet = jetsColl->begin(); jet != jetsColl->end(); ++jet ) {
+  edm::Handle<pat::JetCollection> patJetsColl;
+  iEvent.getByToken(PatJetCollectionTag_, patJetsColl);
+  
+  edm::Handle<reco::TrackCollection> tracksHandle;
+  iEvent.getByToken(TrackCollectionTag_,tracksHandle);
+  
+  for ( pat::JetCollection::const_iterator jet = patJetsColl->begin(); jet != patJetsColl->end(); ++jet ) {
     if ( ( jet->pt() < 20 || std::fabs( jet->eta() ) > 2.4 ) ) continue;
-    njets += 1;
+    
+    unsigned int flav = abs(jet->hadronFlavour());
+    
+    
+    //std::cout << "is there a taginfo? " << jet->hasTagInfo(ipTagInfos_.c_str()) << std::endl;
+    const CandIPTagInfo *trackIpTagInfo = jet->tagInfoCandIP(ipTagInfos_.c_str());
+    const std::vector<edm::Ptr<reco::Candidate> > & selectedTracks( trackIpTagInfo->selectedTracks() );
+
+    int nseltracks = 0;
+    nseltracks = selectedTracks.size();
+    if (flav == 5){ nSelectedTracks_bJet->Fill(nseltracks); }
+    
   }
-  nJets->Fill(njets);
+
   
 }
+
+
+
 
 
 //define this as a plug-in
