@@ -12,9 +12,12 @@
 
 #include "FWCore/Utilities/interface/EDGetToken.h"
 
-#include "DataFormats/JetReco/interface/PFJet.h"
-#include "DataFormats/JetReco/interface/PFJetCollection.h"
-//#include "SimDataFormats/JetMatching/interface/JetFlavourInfoMatching.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/BTauReco/interface/TrackIPTagInfo.h"
+
+
+
 
 
 /** \class BDHadronTrackMonitoringAnalyzer
@@ -25,23 +28,31 @@
 
 class BDHadronTrackMonitoringAnalyzer : public DQMEDAnalyzer {
    public:
-      explicit BDHadronTrackMonitoringAnalyzer(const edm::ParameterSet& pSet);
+	explicit BDHadronTrackMonitoringAnalyzer(const edm::ParameterSet& pSet);
 
-      ~BDHadronTrackMonitoringAnalyzer();
+	~BDHadronTrackMonitoringAnalyzer();
 
-      virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) override;
-      virtual void bookHistograms(DQMStore::IBooker &, edm::Run const &, edm::EventSetup const &) override;     
-
-
+	virtual void analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) override;
+	virtual void bookHistograms(DQMStore::IBooker &, edm::Run const &, edm::EventSetup const &) override;     
+	
+	
    private:
+   
+    // strings
+    std::string ipTagInfos_;
+   
 	// InputTags
-  	edm::InputTag JetSrc_;
+  	edm::InputTag PatJetSrc_;
+  	edm::InputTag TrackSrc_;
 	
 	// Tokens
-    edm::EDGetTokenT<reco::PFJetCollection> JetCollectionTag_;
+    edm::EDGetTokenT<pat::JetCollection> PatJetCollectionTag_;
+    edm::EDGetTokenT<reco::TrackCollection> TrackCollectionTag_;
   
     // Histograms
-    MonitorElement *nJets;
+    // b jets
+    MonitorElement *nSelectedTracks_bJet; // total number of selected tracks
+
 
 
 };
