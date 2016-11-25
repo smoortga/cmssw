@@ -136,6 +136,11 @@ for m in ['patJets'+postfix]:
 process.load('Validation.RecoB.BDHadronTrackMonitoring_cfi')
 process.BDHadronTrackMonitoringAnalyze.PatJetSource = cms.InputTag('selectedPatJets'+postfix)
 
+process.load("SimTracker.TrackHistory.TrackHistory_cff")
+process.load("SimTracker.TrackHistory.TrackClassifier_cff")
+process.load("SimTracker.TrackAssociatorProducers.quickTrackAssociatorByHits_cfi")
+process.load("SimTracker.TrackAssociation.trackingParticleRecoTrackAsssociation_cfi")
+process.load("SimTracker.TrackerHitAssociation.tpClusterProducer_cfi")
 	
 process.BDHadronTrackMonitoringAnalyzer = cms.Path(process.BDHadronTrackMonitoringAnalyze)
 #process.dqmsave_step = cms.Path(process.DQMSaver)
