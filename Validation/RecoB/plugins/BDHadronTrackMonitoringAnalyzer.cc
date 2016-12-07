@@ -4,8 +4,15 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h" 
 
 #include "DQMOffline/RecoB/interface/Tools.h"
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+#include "RecoVertex/VertexPrimitives/interface/ConvertToFromReco.h"
 
-
+#include <iostream>
+#include <fstream>
 
 using namespace reco;
 using namespace edm;
@@ -37,6 +44,8 @@ const reco::TrackBaseRef toTrackRef(const edm::Ptr<reco::Candidate> & cnd)
 // ---------- Constructor -----------
 
 BDHadronTrackMonitoringAnalyzer::BDHadronTrackMonitoringAnalyzer(const edm::ParameterSet& pSet) :
+	distJetAxis_ ( pSet.getParameter<double>("distJetAxisCut") ),
+	decayLength_ ( pSet.getParameter<double>("decayLengthCut") ),
 	ipTagInfos_ ( pSet.getParameter<std::string>("ipTagInfos") ),
 	PatJetSrc_ ( pSet.getParameter<InputTag>("PatJetSource") ),
 	TrackSrc_ ( pSet.getParameter<InputTag>("TrackSource") ),
@@ -165,6 +174,9 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
   iEvent.getByToken(clusterTPMapToken_, pCluster2TPListH);
   const ClusterTPAssociation& clusterToTPMap = *pCluster2TPListH;
   
+  edm::ESHandle<TransientTrackBuilder> trackBuilder ;
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", trackBuilder);
+    
   classifier_.newEvent(iEvent, iSetup);
   
   // -----Primary Vertex-----
@@ -201,21 +213,36 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
 	
 	
     unsigned int nseltracks = 0;
-    nseltracks = selectedTracks.size();
-    if (flav == 5){ nTrkAll_bjet->Fill(nseltracks); }
-    else if (flav == 4){ nTrkAll_cjet->Fill(nseltracks); }
-    else {nTrkAll_dusgjet->Fill(nseltracks);}
-    
     int nseltracksCat[6] = {0,0,0,0,0,0}; // following the order of TrkHistCat
     int nseltracksTruthCat[6] = {0,0,0,0,0,0}; // following the order of TrkHistCat
     unsigned int nseltracksTruth = 0;
     
+    unsigned int nTrackSize = selectedTracks.size(); // number of tracks from IPInfos to loop over
     // -------- Loop Over (selected) Tracks ----------
-    for (unsigned int itt=0; itt < nseltracks; ++itt)
+    for (unsigned int itt=0; itt < nTrackSize; ++itt)
 	{
 		const TrackBaseRef ptrackRef = toTrackRef(selectedTracks[itt]);
         const reco::Track * ptrackPtr = reco::btag::toTrack(ptrackRef);
 		const reco::Track & ptrack = *ptrackPtr;
+		
+		reco::TransientTrack transientTrack = trackBuilder->build(ptrackPtr);
+		GlobalVector direction(jet->px(), jet->py(), jet->pz());
+		
+		Double_t distJetAxis = IPTools::jetTrackDistance(transientTrack, direction, *pv).second.value();
+		
+		Double_t decayLength=999;
+      	TrajectoryStateOnSurface closest = IPTools::closestApproachToJet(transientTrack.impactPointState(), *pv, direction, transientTrack.field());
+      	if (closest.isValid())
+        	decayLength =  (closest.globalPosition() - RecoVertex::convertPos(pv->position())).mag();
+      	else
+			decayLength = 999;
+		
+		// extra cut ons the tracks
+		if (std::fabs(distJetAxis) > distJetAxis_ || decayLength > decayLength_){
+			continue;
+		}
+		nseltracks+=1; // if it passed these cuts, nselectedtracks +1
+		
 		
 		TrackCategories::Flags theFlag = classifier_.evaluate( toTrackRef(selectedTracks[itt]) ).flags();
 		
@@ -646,20 +673,23 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
 	
 	}
 	// -------- END Loop Over (selected Tracks ----------
-	
+
 	if (flav == 5){
+		nTrkAll_bjet->Fill(nseltracks);
 		for (unsigned int i = 0; i < TrkHistCat.size(); i++){
 			nTrk_bjet[i]->Fill(nseltracksCat[i]);
 			nTrkTruth_bjet[i]->Fill(nseltracksTruthCat[i]);
 		}
 	}
     else if (flav == 4){
+    	nTrkAll_bjet->Fill(nseltracks);
     	for (unsigned int i = 0; i < TrkHistCat.size(); i++){
 			nTrk_cjet[i]->Fill(nseltracksCat[i]);
 			nTrkTruth_cjet[i]->Fill(nseltracksTruthCat[i]);
 		}
     }
     else {
+    	nTrkAll_dusgjet->Fill(nseltracks);
     	for (unsigned int i = 0; i < TrkHistCat.size(); i++){
 			nTrk_dusgjet[i]->Fill(nseltracksCat[i]);
 			nTrkTruth_dusgjet[i]->Fill(nseltracksTruthCat[i]);

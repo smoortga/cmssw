@@ -43,7 +43,11 @@ class BDHadronTrackMonitoringAnalyzer : public DQMEDAnalyzer {
 	
 	
    private:
-   
+
+    //cut values
+    double distJetAxis_;
+    double decayLength_;
+    
     // strings
     std::string ipTagInfos_;
    
