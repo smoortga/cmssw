@@ -682,7 +682,7 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
 		}
 	}
     else if (flav == 4){
-    	nTrkAll_bjet->Fill(nseltracks);
+    	nTrkAll_cjet->Fill(nseltracks);
     	for (unsigned int i = 0; i < TrkHistCat.size(); i++){
 			nTrk_cjet[i]->Fill(nseltracksCat[i]);
 			nTrkTruth_cjet[i]->Fill(nseltracksTruthCat[i]);

@@ -58,14 +58,14 @@ void BDHadronTrackMonitoringHarvester::dqmEndJob(DQMStore::IBooker & ibook, DQMS
 
 
 	// c jets
-	nTrk_absolute_cjet = ibook.book1D("nTrk_absolute_cjet","absolute average number of tracks in b jets",6,-0.5,5.5);
+	nTrk_absolute_cjet = ibook.book1D("nTrk_absolute_cjet","absolute average number of tracks in c jets",6,-0.5,5.5);
 	for(it_type iterator = TrkHistCategories.begin(); iterator != TrkHistCategories.end(); iterator++) {
 		nTrk_absolute_cjet->setBinLabel(iterator->first+1,iterator->second,1);
 	}
 	nTrk_absolute_cjet->setAxisRange(0, 5, 2);
 	nTrk_absolute_cjet->setAxisTitle("average number of tracks",2);
 
-	nTrk_relative_cjet = ibook.book1D("nTrk_relative_cjet","relative average number of tracks in b jets",6,-0.5,5.5);
+	nTrk_relative_cjet = ibook.book1D("nTrk_relative_cjet","relative average number of tracks in c jets",6,-0.5,5.5);
 	for(it_type iterator = TrkHistCategories.begin(); iterator != TrkHistCategories.end(); iterator++) {
 		nTrk_relative_cjet->setBinLabel(iterator->first+1,iterator->second,1);
 	}
@@ -73,15 +73,15 @@ void BDHadronTrackMonitoringHarvester::dqmEndJob(DQMStore::IBooker & ibook, DQMS
 	nTrk_relative_cjet->setAxisTitle("average fraction of tracks",2);
 
 
-	// b jets
-	nTrk_absolute_dusgjet = ibook.book1D("nTrk_absolute_dusgjet","absolute average number of tracks in b jets",6,-0.5,5.5);
+	// udsg jets
+	nTrk_absolute_dusgjet = ibook.book1D("nTrk_absolute_dusgjet","absolute average number of tracks in dusg jets",6,-0.5,5.5);
 	for(it_type iterator = TrkHistCategories.begin(); iterator != TrkHistCategories.end(); iterator++) {
 		nTrk_absolute_dusgjet->setBinLabel(iterator->first+1,iterator->second,1);
 	}
 	nTrk_absolute_dusgjet->setAxisRange(0, 5, 2);
 	nTrk_absolute_dusgjet->setAxisTitle("average number of tracks",2);
 
-	nTrk_relative_dusgjet = ibook.book1D("nTrk_relative_dusgjet","relative average number of tracks in b jets",6,-0.5,5.5);
+	nTrk_relative_dusgjet = ibook.book1D("nTrk_relative_dusgjet","relative average number of tracks in dusg jets",6,-0.5,5.5);
 	for(it_type iterator = TrkHistCategories.begin(); iterator != TrkHistCategories.end(); iterator++) {
 		nTrk_relative_dusgjet->setBinLabel(iterator->first+1,iterator->second,1);
 	}
