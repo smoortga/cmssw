@@ -22,6 +22,8 @@ process.source = cms.Source("PoolSource",
 
 #process.PoolSource.fileNames = ['root://xrootd-cms.infn.it//store/mc/RunIISpring16DR80/TT_TuneCUETP8M1_13TeV-powheg-pythia8/GEN-SIM-RECODEBUG/PUSpring16_RECODEBUG_80X_mcRun2_asymptotic_2016_v3_ext3-v1/20000/00C31A90-2237-E611-9C70-002590D0AFD0.root']
 process.PoolSource.fileNames = ['file:mytest.root']
+#process.PoolSource.fileNames = ['root://xrootd-cms.infn.it//store/relval/CMSSW_8_1_0_pre16/RelValTTbar_13/GEN-SIM-RECODEBUG/PU25ns_81X_upgrade2017_realistic_v22_HS_rsb-v1/10000/002033F7-36B9-E611-A30B-0025905A48EC.root']
+
 
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContent, patEventContentNoCleaning
 process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
@@ -43,9 +45,14 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')  #for MC
+#process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')  #for MC
+process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_v3"
 
-
+"""
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+"""
 
 bTagDiscriminators = [
     'pfJetBProbabilityBJetTags'
