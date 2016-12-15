@@ -309,10 +309,6 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
 			
 		}
 		
-		// fill nselectedtrackTruth for different flavour
-		if (flav == 5){ nTrkTruthAll_bjet->Fill(nseltracksTruth); }
-    	else if (flav == 4){ nTrkTruthAll_cjet->Fill(nseltracksTruth); }
-    	else {nTrkTruthAll_dusgjet->Fill(nseltracksTruth);}
 		
 		
 		// ----------- Filling the correct histograms based on jet flavour and Track history Category --------
@@ -676,6 +672,7 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
 
 	if (flav == 5){
 		nTrkAll_bjet->Fill(nseltracks);
+		nTrkTruthAll_bjet->Fill(nseltracksTruth);
 		for (unsigned int i = 0; i < TrkHistCat.size(); i++){
 			nTrk_bjet[i]->Fill(nseltracksCat[i]);
 			nTrkTruth_bjet[i]->Fill(nseltracksTruthCat[i]);
@@ -683,6 +680,7 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
 	}
     else if (flav == 4){
     	nTrkAll_cjet->Fill(nseltracks);
+    	nTrkTruthAll_cjet->Fill(nseltracksTruth);
     	for (unsigned int i = 0; i < TrkHistCat.size(); i++){
 			nTrk_cjet[i]->Fill(nseltracksCat[i]);
 			nTrkTruth_cjet[i]->Fill(nseltracksTruthCat[i]);
@@ -690,6 +688,7 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
     }
     else {
     	nTrkAll_dusgjet->Fill(nseltracks);
+    	nTrkTruthAll_dusgjet->Fill(nseltracksTruth);
     	for (unsigned int i = 0; i < TrkHistCat.size(); i++){
 			nTrk_dusgjet[i]->Fill(nseltracksCat[i]);
 			nTrkTruth_dusgjet[i]->Fill(nseltracksTruthCat[i]);
