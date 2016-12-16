@@ -73,7 +73,7 @@ void BDHadronTrackMonitoringAnalyzer::bookHistograms(DQMStore::IBooker & ibook, 
   
   
   nTrkAll_bjet = ibook.book1D("nTrkAll_bjet","Number of selected tracks in b jets;number of selected tracks;jets",16,-0.5,15.5);
-  nTrkTruthAll_bjet = ibook.book1D("nTrkTruthAll_bJet","Number of selected TrackingParticles in b jets;number of selected truth tracks;jets",16,-0.5,15.5);
+  nTrkTruthAll_bjet = ibook.book1D("nTrkTruthAll_bjet","Number of selected TrackingParticles in b jets;number of selected truth tracks;jets",16,-0.5,15.5);
   
   nTrkAll_cjet = ibook.book1D("nTrkAll_cjet","Number of selected tracks in c jets;number of selected tracks;jets",16,-0.5,15.5);
   nTrkTruthAll_cjet = ibook.book1D("nTrkTruthAll_cjet","Number of selected TrackingParticles in c jets;number of selected truth tracks;jets",16,-0.5,15.5);
