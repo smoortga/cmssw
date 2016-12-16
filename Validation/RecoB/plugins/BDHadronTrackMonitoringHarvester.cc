@@ -102,7 +102,7 @@ void BDHadronTrackMonitoringHarvester::dqmEndJob(DQMStore::IBooker & ibook, DQMS
 	for(it_type iterator = TrkHistCategories.begin(); iterator != TrkHistCategories.end(); iterator++) {
 		nTrk_bjet[iterator->first] = iget.get("nTrk_bjet_"+iterator->second);
 	}
-	MonitorElement *nTrkAll_bjet = iget.get("nTrkAll_bJet");
+	MonitorElement *nTrkAll_bjet = iget.get("nTrkAll_bjet");
 	
 	// c jets
 	MonitorElement *nTrk_cjet[6];
