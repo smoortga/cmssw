@@ -46,6 +46,8 @@ const reco::TrackBaseRef toTrackRef(const edm::Ptr<reco::Candidate> & cnd)
 BDHadronTrackMonitoringAnalyzer::BDHadronTrackMonitoringAnalyzer(const edm::ParameterSet& pSet) :
 	distJetAxis_ ( pSet.getParameter<double>("distJetAxisCut") ),
 	decayLength_ ( pSet.getParameter<double>("decayLengthCut") ),
+	minJetPt_ ( pSet.getParameter<double>("minJetPt") ),
+	maxJetEta_ ( pSet.getParameter<double>("maxJetEta") ),
 	ipTagInfos_ ( pSet.getParameter<std::string>("ipTagInfos") ),
 	PatJetSrc_ ( pSet.getParameter<InputTag>("PatJetSource") ),
 	TrackSrc_ ( pSet.getParameter<InputTag>("TrackSource") ),
@@ -202,7 +204,7 @@ void BDHadronTrackMonitoringAnalyzer::analyze(const edm::Event& iEvent, const ed
   
   // -------- Loop Over Jets ----------
   for ( pat::JetCollection::const_iterator jet = patJetsColl->begin(); jet != patJetsColl->end(); ++jet ) {
-    if ( ( jet->pt() < 20 || std::fabs( jet->eta() ) > 2.4 ) ) continue;
+    if ( ( jet->pt() < minJetPt_ || std::fabs( jet->eta() ) > maxJetEta_ ) ) continue;
     
     unsigned int flav = abs(jet->hadronFlavour());
     
