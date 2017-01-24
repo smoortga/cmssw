@@ -7,8 +7,6 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
-process.load('Configuration.StandardSequences.EDMtoMEAtRunEnd_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 # load DQM
@@ -20,19 +18,23 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring()
 )
 
-#process.PoolSource.fileNames = ['root://xrootd-cms.infn.it//store/mc/RunIISpring16DR80/TT_TuneCUETP8M1_13TeV-powheg-pythia8/GEN-SIM-RECODEBUG/PUSpring16_RECODEBUG_80X_mcRun2_asymptotic_2016_v3_ext3-v1/20000/00C31A90-2237-E611-9C70-002590D0AFD0.root']
-process.PoolSource.fileNames = ['file:mytest.root']
-#process.PoolSource.fileNames = ['root://xrootd-cms.infn.it//store/relval/CMSSW_8_1_0_pre16/RelValTTbar_13/GEN-SIM-RECODEBUG/PU25ns_81X_upgrade2017_realistic_v22_HS_rsb-v1/10000/002033F7-36B9-E611-A30B-0025905A48EC.root']
+
+process.PoolSource.fileNames = [
+	'root://xrootd-cms.infn.it//store/relval/CMSSW_8_1_0_pre16/RelValTTbar_13/GEN-SIM-RECODEBUG/PU25ns_81X_upgrade2017_realistic_v22_HS_rsb-v1/10000/002033F7-36B9-E611-A30B-0025905A48EC.root',
+	'root://xrootd-cms.infn.it//store/relval/CMSSW_8_1_0_pre16/RelValTTbar_13/GEN-SIM-RECODEBUG/PU25ns_81X_upgrade2017_realistic_v22_HS_rsb-v1/10000/00A6E94A-3DB9-E611-AAAD-0CC47A4D7604.root',
+	'root://xrootd-cms.infn.it//store/relval/CMSSW_8_1_0_pre16/RelValTTbar_13/GEN-SIM-RECODEBUG/PU25ns_81X_upgrade2017_realistic_v22_HS_rsb-v1/10000/00EB8925-41B9-E611-BF1E-0CC47A78A456.root',
+	'root://xrootd-cms.infn.it//store/relval/CMSSW_8_1_0_pre16/RelValTTbar_13/GEN-SIM-RECODEBUG/PU25ns_81X_upgrade2017_realistic_v22_HS_rsb-v1/10000/020F6DD1-36B9-E611-B893-0CC47A4D7604.root',
+	'root://xrootd-cms.infn.it//store/relval/CMSSW_8_1_0_pre16/RelValTTbar_13/GEN-SIM-RECODEBUG/PU25ns_81X_upgrade2017_realistic_v22_HS_rsb-v1/10000/027E621E-3FB9-E611-9415-0025905A6104.root'
+	]
 
 
 from PhysicsTools.PatAlgos.patEventContent_cff import patEventContent, patEventContentNoCleaning
 process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
-                                     fileName = cms.untracked.string("OUT.root"),
-                                     outputCommands = cms.untracked.vstring('drop *', *patEventContent)
+                                     fileName = cms.untracked.string("OUT.root")
                                      )
                                 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(50)
+    input = cms.untracked.int32(1000)
 )
 
 process.options = cms.untracked.PSet(
@@ -46,41 +48,18 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1
 # Other statements
 from Configuration.AlCa.GlobalTag import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')  #for MC
-process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_2016_v3"
+process.GlobalTag.globaltag = "80X_mcRun2_asymptotic_v4"
 
-"""
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
-from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
-"""
-
-bTagDiscriminators = [
-    'pfJetBProbabilityBJetTags'
-   ,'pfJetProbabilityBJetTags'
-   ,'pfPositiveOnlyJetBProbabilityBJetTags'
-   ,'pfPositiveOnlyJetProbabilityBJetTags'
-   ,'pfNegativeOnlyJetBProbabilityBJetTags'
-   ,'pfNegativeOnlyJetProbabilityBJetTags'
-   ,'pfTrackCountingHighPurBJetTags'
-   ,'pfTrackCountingHighEffBJetTags'
-   ,'pfNegativeTrackCountingHighPurBJetTags'
-   ,'pfNegativeTrackCountingHighEffBJetTags'
-   ,'pfSimpleSecondaryVertexHighEffBJetTags'
-   ,'pfSimpleSecondaryVertexHighPurBJetTags'
-   ,'pfNegativeSimpleSecondaryVertexHighEffBJetTags'
-   ,'pfNegativeSimpleSecondaryVertexHighPurBJetTags'
-   ,'pfCombinedSecondaryVertexV2BJetTags'
-
-]
 
 
 postfix = "PFlow"
-
+"""
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("PhysicsTools.PatAlgos.selectionLayer1.selectedPatCandidates_cff")
 process.load("PhysicsTools.PatAlgos.cleaningLayer1.cleanPatCandidates_cff")
 process.load("PhysicsTools.PatAlgos.selectionLayer1.countPatCandidates_cff")
+"""
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
 usePF2PAT(
@@ -89,7 +68,7 @@ usePF2PAT(
 			jetAlgo="AK4",
 			runOnMC=True,
 			postfix=postfix,
-			jetCorrections=('AK4PF', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+			jetCorrections=('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
 			pvCollection=cms.InputTag('offlinePrimaryVertices')
 )
 
@@ -99,8 +78,7 @@ getattr(process,"pfNoPileUpJME"+postfix).enable = True
 getattr(process,"pfNoMuonJMEPFBRECO"+postfix).enable = False
 getattr(process,"pfNoElectronJMEPFBRECO"+postfix).enable = False
 
-#process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
-#process.load("PhysicsTools.PatAlgos.selectionLayer1.selectedPatCandidates_cff")
+
 # switch jet collection to make PAT collection
 from PhysicsTools.PatAlgos.tools.jetTools import *
 switchJetCollection(
@@ -123,21 +101,21 @@ switchJetCollection(
    					,'pfInclusiveSecondaryVertexFinderCvsLTagInfos'
    					,'pfInclusiveSecondaryVertexFinderNegativeCvsLTagInfos'
 		],
-        btagDiscriminators = bTagDiscriminators,
-        jetCorrections = ('AK4PF', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+        btagDiscriminators = ['pfJetBProbabilityBJetTags'
+   							,'pfJetProbabilityBJetTags'
+   							,'pfCombinedSecondaryVertexV2BJetTags'
+   		],
+        jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
         genJetCollection = cms.InputTag('ak4GenJetsNoNu'),
         genParticles = cms.InputTag('genParticles'),
-        #explicitJTA = False,
         postfix=postfix
 )
 
 
-#process.content = cms.EDAnalyzer("EventContentAnalyzer")
 ## Add TagInfos to PAT jets
-for m in ['patJets'+postfix]:
-    if hasattr(process,m) and getattr( getattr(process,m), 'addBTagInfo' ):
-        print "Switching 'addTagInfos' for " + m + " to 'True'"
-        setattr( getattr(process,m), 'addTagInfos', cms.bool(True) )
+if hasattr(process,'patJets'+postfix) and getattr( getattr(process,'patJets'+postfix), 'addBTagInfo' ):
+	setattr( getattr(process,'patJets'+postfix), 'addTagInfos', cms.bool(True) )
+
 
 # my analyzer
 process.load('Validation.RecoB.BDHadronTrackMonitoring_cfi')
@@ -157,7 +135,6 @@ process.DQMoutput_step = cms.EndPath(process.DQMoutput)
 
 # Schedule definition
 process.schedule = cms.Schedule(
-	#process.patSeq,
     process.BDHadronTrackMonitoringAnalyzer,
     process.DQMoutput_step
 #    process.dqmsave_step
